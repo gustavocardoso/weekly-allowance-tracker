@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Debug - Allowance Tracker</title>
+  <style>
+    body { font-family: 'Courier New', monospace; max-width: 900px; margin: 20px auto; padding: 20px; background: #1e1e1e; color: #d4d4d4; }
+    button { padding: 10px 20px; margin: 5px; cursor: pointer; background: #007acc; color: white; border: none; border-radius: 4px; }
+    button:hover { background: #005a9e; }
+    .log { background: #252526; padding: 15px; border-radius: 8px; margin: 10px 0; overflow-x: auto; }
+    .error { color: #f48771; }
+    .success { color: #89d185; }
+    .info { color: #75beff; }
+    pre { margin: 0; white-space: pre-wrap; word-wrap: break-word; }
+    h2 { color: #4ec9b0; }
+  </style>
+</head>
+<body>
+  <h1>🔍 Database Debug Tool</h1>
+  
+  <div>
+    <button onclick="checkIndexedDB()">1. Check IndexedDB</button>
+    <button onclick="checkLocalStorage()">2. Check localStorage</button>
+    <button onclick="testDatabaseInit()">3. Test Database Init</button>
+    <button onclick="testProfileService()">4. Test ProfileService</button>
+    <button onclick="testSituationService()">5. Test SituationService</button>
+    <button onclick="clearAll()">Clear All Data</button>
+    <button onclick="location.href='/'">Go to App</button>
+  </div>
+  
+  <div id="output"></div>
+
+  <script type="module">
+    window.log = (message, type = 'info') => {
+      const output = document.getElementById('output');
+      const div = document.createElement('div');
+      div.className = 'log';
+      div.innerHTML = `<span class="${type}">[${new Date().toLocaleTimeString()}]</span> ${message}`;
+      output.appendChild(div);
+      output.scrollTop = output.scrollHeight;
+    };
+
+    window.checkIndexedDB = async () => {
+      log('<h2>🗄️ IndexedDB Check</h2>');
+      try {
+        const db = await new Promise((resolve, reject) => {
+          const request = indexedDB.open('weekly-allowance-tracker', 1);
+          request.onsuccess = () => resolve(request.result);
+          request.onerror = () => reject(request.error);
+        });
+        
+        log('✅ IndexedDB opened successfully', 'success');
+        log(`Database name: ${db.name}`, 'info');
+        log(`Version: ${db.version}`, 'info');
+        log(`Object stores: ${Array.from(db.objectStoreNames).join(', ')}`, 'info');
+        
+        // Try to read database blob
+        const tx = db.transaction('sqlite', 'readonly');
+        const store = tx.objectStore('sqlite');
+        const request = store.get('database');
+        
+        request.onsuccess = () => {
+          const data = request.result;
+          if (data) {
+            log(`✅ Database blob found: ${data.length} bytes`, 'success');
+          } else {
+            log('⚠️ No database blob stored yet', 'info');
+          }
+        };
+        
+        db.close();
+      } catch (error) {
+        log(`❌ IndexedDB Error: ${error.message}`, 'error');
+        log(`<pre>${error.stack}</pre>`, 'error');
+      }
+    };
+
+    window.checkLocalStorage = () => {
+      log('<h2>📦 localStorage Check</h2>');
+      try {
+        const keys = Object.keys(localStorage);
+        log(`Total keys: ${keys.length}`, 'info');
+        
+        const appData = localStorage.getItem('appData');
+        if (appData) {
+          const parsed = JSON.parse(appData);
+          log('✅ appData found', 'success');
+          log(`Profile: ${parsed.profile ? parsed.profile.childName : 'none'}`, 'info');
+          log(`Situations: ${parsed.situations?.length || 0}`, 'info');
+          log(`Cycles: ${parsed.cycles?.length || 0}`, 'info');
+          log(`Entries: ${parsed.entries?.length || 0}`, 'info');
+          log(`<pre>${JSON.stringify(parsed, null, 2)}</pre>`, 'info');
+        } else {
+          log('⚠️ No appData in localStorage', 'info');
+        }
+      } catch (error) {
+        log(`❌ localStorage Error: ${error.message}`, 'error');
+      }
+    };
+
+    window.testDatabaseInit = async () => {
+      log('<h2>🚀 Database Initialization Test</h2>');
+      try {
+        // Import database service
+        const { databaseService } = await import('/src/database/database.ts');
+        
+        log('Initializing database...', 'info');
+        const db = await databaseService.init();
+        log('✅ Database initialized', 'success');
+        
+        // Check schema version
+        const versionResult = db.exec('SELECT MAX(version) as v FROM schema_migrations;');
+        const version = versionResult[0]?.values[0]?.[0];
+        log(`Schema version: ${version}`, 'info');
+        
+        // Check tables
+        const tablesResult = db.exec("SELECT name FROM sqlite_master WHERE type='table' ORDER BY name;");
+        const tables = tablesResult[0]?.values.flat() || [];
+        log(`Tables: ${tables.join(', ')}`, 'info');
+        
+        // Check profile table structure
+        const structureResult = db.exec("PRAGMA table_info(profile);");
+        log('<pre>Profile table structure:\n' + JSON.stringify(structureResult, null, 2) + '</pre>', 'info');
+        
+        // Check situations table structure
+        const sitStructResult = db.exec("PRAGMA table_info(situations);");
+        log('<pre>Situations table structure:\n' + JSON.stringify(sitStructResult, null, 2) + '</pre>', 'info');
+        
+      } catch (error) {
+        log(`❌ Database Init Error: ${error.message}`, 'error');
+        log(`<pre>${error.stack}</pre>`, 'error');
+      }
+    };
+
+    window.testProfileService = async () => {
+      log('<h2>👤 ProfileService Test</h2>');
+      try {
+        const { profileService } = await import('/src/services/ProfileService.ts');
+        
+        log('Getting profile...', 'info');
+        const profile = await profileService.getProfile();
+        
+        if (profile) {
+          log('✅ Profile found', 'success');
+          log(`<pre>${JSON.stringify(profile, null, 2)}</pre>`, 'success');
+        } else {
+          log('⚠️ No profile in database', 'info');
+          
+          // Try to create from localStorage
+          const appData = localStorage.getItem('appData');
+          if (appData) {
+            const parsed = JSON.parse(appData);
+            if (parsed.profile) {
+              log('Creating profile from localStorage...', 'info');
+              const created = await profileService.createInitialProfile({
+                childName: parsed.profile.childName,
+                baseAllowanceCents: parsed.profile.baseAmountCents,
+                currency: 'CAD',
+              });
+              log('✅ Profile created', 'success');
+              log(`<pre>${JSON.stringify(created, null, 2)}</pre>`, 'success');
+            }
+          }
+        }
+      } catch (error) {
+        log(`❌ ProfileService Error: ${error.message}`, 'error');
+        log(`<pre>${error.stack}</pre>`, 'error');
+      }
+    };
+
+    window.testSituationService = async () => {
+      log('<h2>⭐ SituationService Test</h2>');
+      try {
+        const { situationService } = await import('/src/services/SituationService.ts');
+        
+        log('Getting all situations...', 'info');
+        const situations = await situationService.getAll();
+        log(`✅ Found ${situations.length} situations`, 'success');
+        
+        if (situations.length > 0) {
+          log(`<pre>${JSON.stringify(situations, null, 2)}</pre>`, 'info');
+        } else {
+          log('No situations in database', 'info');
+        }
+        
+        // Try to create a test situation
+        log('Creating test situation...', 'info');
+        const created = await situationService.create({
+          name: 'Debug Test Situation',
+          emoji: '🔧',
+          amountCents: 100,
+          type: 'reward',
+        });
+        log('✅ Test situation created', 'success');
+        log(`<pre>${JSON.stringify(created, null, 2)}</pre>`, 'success');
+        
+      } catch (error) {
+        log(`❌ SituationService Error: ${error.message}`, 'error');
+        log(`<pre>${error.stack}</pre>`, 'error');
+      }
+    };
+
+    window.clearAll = async () => {
+      if (!confirm('Clear all data?')) return;
+      
+      log('<h2>🗑️ Clearing All Data</h2>');
+      
+      try {
+        await new Promise((resolve, reject) => {
+          const request = indexedDB.deleteDatabase('weekly-allowance-tracker');
+          request.onsuccess = () => resolve();
+          request.onerror = () => reject(request.error);
+        });
+        log('✅ IndexedDB cleared', 'success');
+      } catch (error) {
+        log(`❌ IndexedDB clear error: ${error.message}`, 'error');
+      }
+      
+      localStorage.clear();
+      log('✅ localStorage cleared', 'success');
+      log('🔄 Reload the page to start fresh', 'info');
+    };
+
+    // Auto-run checks on load
+    log('🔍 Debug tool loaded. Click buttons to run tests.', 'info');
+  </script>
+</body>
+</html>

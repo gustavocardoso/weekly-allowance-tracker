@@ -1,0 +1,20 @@
+node_modules/
+dist/
+.vite/
+coverage/
+*.log
+.DS_Store
+.env
+.env.*
+!.env.example
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
+
+# Build info
+*.tsbuildinfo
+
+# Debug files
+devserver.log
+test-db-init.html
+project-structure.txt

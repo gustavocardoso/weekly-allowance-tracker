@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Clear Database - Allowance Tracker</title>
+  <style>
+    body { font-family: system-ui; max-width: 600px; margin: 50px auto; padding: 20px; }
+    button { padding: 12px 24px; font-size: 16px; cursor: pointer; margin: 10px; }
+    .danger { background: #dc2626; color: white; border: none; border-radius: 8px; }
+    .success { background: #16a34a; color: white; border: none; border-radius: 8px; }
+    .info { background: #2563eb; color: white; border: none; border-radius: 8px; }
+    #status { margin-top: 20px; padding: 15px; border-radius: 8px; }
+    .error { background: #fee2e2; color: #991b1b; }
+    .ok { background: #d1fae5; color: #065f46; }
+  </style>
+</head>
+<body>
+  <h1>🗑️ Clear Database</h1>
+  <p>Use this page to completely reset your allowance tracker database.</p>
+  
+  <div>
+    <button class="info" onclick="showStatus()">Show Database Status</button>
+    <button class="danger" onclick="clearIndexedDB()">Clear IndexedDB (sql.js database)</button>
+    <button class="danger" onclick="clearLocalStorage()">Clear localStorage (cache)</button>
+    <button class="danger" onclick="clearAll()">Clear Everything</button>
+    <button class="success" onclick="location.href='/'">Go to App</button>
+  </div>
+  
+  <div id="status"></div>
+
+  <script>
+    async function showStatus() {
+      const status = document.getElementById('status');
+      let html = '<h3>Current Storage Status:</h3>';
+      
+      // Check IndexedDB
+      try {
+        const db = await new Promise((resolve, reject) => {
+          const request = indexedDB.open('weekly-allowance-tracker', 1);
+          request.onsuccess = () => resolve(request.result);
+          request.onerror = () => reject(request.error);
+        });
+        html += '<p>✅ IndexedDB exists</p>';
+        db.close();
+      } catch (e) {
+        html += '<p>❌ IndexedDB not found</p>';
+      }
+      
+      // Check localStorage
+      const keys = Object.keys(localStorage);
+      const appKeys = keys.filter(k => k.includes('allowance') || k.includes('tracker') || k === 'appData');
+      html += `<p>📦 localStorage has ${appKeys.length} key(s): ${appKeys.join(', ') || 'none'}</p>`;
+      
+      status.innerHTML = html;
+      status.className = 'ok';
+    }
+
+    async function clearIndexedDB() {
+      if (!confirm('This will delete the sql.js database with all situations. Continue?')) return;
+      
+      try {
+        await new Promise((resolve, reject) => {
+          const request = indexedDB.deleteDatabase('weekly-allowance-tracker');
+          request.onsuccess = () => resolve(true);
+          request.onerror = () => reject(request.error);
+        });
+        const status = document.getElementById('status');
+        status.innerHTML = '<p>✅ IndexedDB cleared successfully!</p>';
+        status.className = 'ok';
+      } catch (e) {
+        const status = document.getElementById('status');
+        status.innerHTML = `<p>❌ Error: ${e.message}</p>`;
+        status.className = 'error';
+      }
+    }
+
+    function clearLocalStorage() {
+      if (!confirm('This will delete profile, cycles, and entries from localStorage. Continue?')) return;
+      
+      localStorage.clear();
+      const status = document.getElementById('status');
+      status.innerHTML = '<p>✅ localStorage cleared successfully!</p>';
+      status.className = 'ok';
+    }
+
+    async function clearAll() {
+      if (!confirm('This will DELETE EVERYTHING. Are you absolutely sure?')) return;
+      
+      await clearIndexedDB();
+      clearLocalStorage();
+      const status = document.getElementById('status');
+      status.innerHTML = '<p>✅ All data cleared! You can now start fresh.</p>';
+      status.className = 'ok';
+    }
+  </script>
+</body>
+</html>

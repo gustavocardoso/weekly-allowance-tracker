@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Force Reset - Allowance Tracker</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      padding: 20px;
+    }
+    .container {
+      background: white;
+      border-radius: 24px;
+      padding: 40px;
+      max-width: 500px;
+      width: 100%;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+    }
+    h1 {
+      font-size: 32px;
+      margin-bottom: 16px;
+      color: #1a202c;
+    }
+    p {
+      color: #4a5568;
+      line-height: 1.6;
+      margin-bottom: 12px;
+    }
+    .warning {
+      background: #fef3c7;
+      border-left: 4px solid #f59e0b;
+      padding: 16px;
+      margin: 24px 0;
+      border-radius: 8px;
+    }
+    .warning p {
+      color: #92400e;
+      margin: 0;
+    }
+    button {
+      width: 100%;
+      padding: 16px 24px;
+      font-size: 18px;
+      font-weight: 600;
+      border: none;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: all 0.2s;
+      margin-top: 8px;
+    }
+    .btn-reset {
+      background: #dc2626;
+      color: white;
+    }
+    .btn-reset:hover {
+      background: #b91c1c;
+      transform: translateY(-2px);
+      box-shadow: 0 10px 20px rgba(220, 38, 38, 0.3);
+    }
+    .btn-cancel {
+      background: #e5e7eb;
+      color: #374151;
+    }
+    .btn-cancel:hover {
+      background: #d1d5db;
+    }
+    #status {
+      margin-top: 24px;
+      padding: 16px;
+      border-radius: 12px;
+      display: none;
+    }
+    #status.success {
+      background: #d1fae5;
+      color: #065f46;
+      display: block;
+    }
+    #status.error {
+      background: #fee2e2;
+      color: #991b1b;
+      display: block;
+    }
+    .emoji {
+      font-size: 64px;
+      text-align: center;
+      margin-bottom: 24px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="emoji">🔧</div>
+    <h1>Force Database Reset</h1>
+    <p>Use this tool to completely reset your allowance tracker database and start fresh.</p>
+    
+    <div class="warning">
+      <p><strong>⚠️ Warning:</strong> This will permanently delete ALL your data including profile, situations, cycles, and entries. This action cannot be undone.</p>
+    </div>
+
+    <p><strong>This will fix:</strong></p>
+    <ul style="margin: 16px 0 16px 24px; color: #4a5568;">
+      <li>Database schema errors</li>
+      <li>Migration conflicts</li>
+      <li>Situations not persisting</li>
+      <li>"Unable to load situations" errors</li>
+    </ul>
+
+    <button class="btn-reset" onclick="forceReset()">🗑️ Delete Everything & Reset</button>
+    <button class="btn-cancel" onclick="window.location.href='/'">← Cancel (Go Back)</button>
+
+    <div id="status"></div>
+  </div>
+
+  <script>
+    async function forceReset() {
+      const confirmed = confirm(
+        'ARE YOU ABSOLUTELY SURE?\n\n' +
+        'This will DELETE ALL DATA:\n' +
+        '• Profile\n' +
+        '• Situations\n' +
+        '• Cycles\n' +
+        '• Entries\n\n' +
+        'Click OK to proceed or Cancel to abort.'
+      );
+
+      if (!confirmed) {
+        return;
+      }
+
+      const status = document.getElementById('status');
+      status.className = '';
+      status.style.display = 'block';
+      status.innerHTML = '⏳ Clearing database...';
+
+      try {
+        // Step 1: Clear IndexedDB
+        await new Promise((resolve, reject) => {
+          const request = indexedDB.deleteDatabase('weekly-allowance-tracker');
+          request.onsuccess = () => resolve();
+          request.onerror = () => reject(request.error);
+          request.onblocked = () => {
+            alert('Database is blocked. Please close all other tabs of this app and try again.');
+            reject(new Error('Database blocked'));
+          };
+        });
+
+        // Step 2: Clear localStorage
+        localStorage.clear();
+
+        // Step 3: Clear sessionStorage
+        sessionStorage.clear();
+
+        // Step 4: Clear all cookies (if any)
+        document.cookie.split(";").forEach(function(c) {
+          document.cookie = c.replace(/^ +/, "").replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/");
+        });
+
+        // Success!
+        status.className = 'success';
+        status.innerHTML = 
+          '<p style="margin: 0;"><strong>✅ Success!</strong></p>' +
+          '<p style="margin: 8px 0 0 0;">All data cleared. Redirecting to app...</p>';
+
+        // Redirect after 2 seconds
+        setTimeout(() => {
+          window.location.href = '/';
+        }, 2000);
+
+      } catch (error) {
+        status.className = 'error';
+        status.innerHTML = 
+          '<p style="margin: 0;"><strong>❌ Error:</strong></p>' +
+          '<p style="margin: 8px 0 0 0;">' + error.message + '</p>' +
+          '<p style="margin: 8px 0 0 0;">Please try refreshing the page manually (F5) and try again.</p>';
+        console.error('Reset error:', error);
+      }
+    }
+  </script>
+</body>
+</html>
