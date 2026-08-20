@@ -184,8 +184,8 @@ export default function SettingsPage() {
         <h2 className="text-2xl font-bold text-penalty-900">Danger zone</h2>
         <p className="mt-2 text-sm text-penalty-800">This action cannot be undone. All profile data, situations, cycles, and entries will be permanently deleted.</p>
         <Button 
-          variant="secondary" 
-          className="mt-4 w-full border-2 border-penalty-600 bg-penalty-600 text-white hover:bg-penalty-700 sm:w-auto" 
+          variant="danger" 
+          className="mt-4 w-full sm:w-auto" 
           onClick={() => setShowResetDialog(true)}
         >
           Clear all data
