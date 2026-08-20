@@ -1,6 +1,7 @@
 import type { ReactNode } from 'react';
 
 import Container from '@/components/Container';
+import StorageModeIndicator from '@/components/StorageModeIndicator';
 import { classNames } from '@/utils/classNames';
 
 export interface HeaderNavItem {
@@ -32,6 +33,9 @@ export function Header({ title, subtitle, navigation = [], actions }: HeaderProp
           </div>
         </div>
         <div className="flex flex-col gap-4 md:items-end">
+          {/* Storage Mode Indicator */}
+          <StorageModeIndicator />
+          
           {navigation.length ? (
             <nav aria-label="Primary navigation">
               <ul className="flex flex-wrap gap-2">

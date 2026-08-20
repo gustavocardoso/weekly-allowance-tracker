@@ -1,12 +1,17 @@
 import { Link, useParams } from 'react-router-dom';
 
+import CycleDetailSkeleton from '@/components/CycleDetailSkeleton';
 import { EmptyState, SectionCard, StatTile } from '@/components/ui';
 import { useHistory } from '@/hooks/useHistory';
 import { formatCurrency, formatDateTime, formatShortDate } from '@/lib/storage';
 
 export default function CycleDetailPage() {
   const { id } = useParams();
-  const { closedCycles } = useHistory();
+  const { closedCycles, loading } = useHistory();
+
+  if (loading) {
+    return <CycleDetailSkeleton />;
+  }
 
   const cycle = closedCycles.find((item) => item.id === id);
 

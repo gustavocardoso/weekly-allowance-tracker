@@ -1,11 +1,16 @@
 import { Link } from 'react-router-dom';
 
+import HistorySkeleton from '@/components/HistorySkeleton';
 import { EmptyState, SectionCard } from '@/components/ui';
 import { useHistory } from '@/hooks/useHistory';
 import { formatCurrency, formatShortDate } from '@/lib/storage';
 
 export default function HistoryPage() {
-  const { closedCycles } = useHistory();
+  const { closedCycles, loading } = useHistory();
+
+  if (loading) {
+    return <HistorySkeleton />;
+  }
 
   if (closedCycles.length === 0) {
     return <EmptyState title="No history yet" description="Close your first week to build a timeline of allowance wins." />;

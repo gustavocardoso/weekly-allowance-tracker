@@ -1,9 +1,14 @@
+import StatsSkeleton from '@/components/StatsSkeleton';
 import { SectionCard, StatTile } from '@/components/ui';
 import { useStats } from '@/hooks/useStats';
 import { formatCurrency } from '@/lib/storage';
 
 export default function StatsPage() {
-  const { stats } = useStats();
+  const { stats, loading } = useStats();
+
+  if (loading) {
+    return <StatsSkeleton />;
+  }
 
   return (
     <div className="space-y-6">

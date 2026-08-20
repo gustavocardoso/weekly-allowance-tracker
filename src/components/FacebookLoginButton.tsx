@@ -1,27 +1,20 @@
 import { useState } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
+import { useAuthToast } from '@/hooks/useAuthToast';
 
 export default function FacebookLoginButton() {
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState('');
   const { signInWithFacebook } = useAuth();
+  const { showError } = useAuthToast();
 
   const handleClick = async () => {
     setIsLoading(true);
-    setError('');
 
     try {
       await signInWithFacebook();
     } catch (err: any) {
       console.error('Facebook login error:', err);
-      
-      if (err.message?.includes('popup_closed')) {
-        setError('Login cancelled. Please try again.');
-      } else if (err.message?.includes('access_denied')) {
-        setError('Permission denied. Please allow access to continue.');
-      } else {
-        setError(err.message || 'Failed to sign in with Facebook');
-      }
+      showError(err);
     } finally {
       setIsLoading(false);
     }
@@ -45,9 +38,6 @@ export default function FacebookLoginButton() {
           {isLoading ? 'Signing in...' : 'Continue with Facebook'}
         </span>
       </button>
-      {error && (
-        <p className="mt-2 text-sm text-red-600">{error}</p>
-      )}
     </div>
   );
 }

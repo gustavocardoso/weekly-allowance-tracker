@@ -3,6 +3,7 @@ import { useState } from 'react';
 
 import Button from '@/components/Button';
 import ConfirmDialog from '@/components/ConfirmDialog';
+import DashboardSkeleton from '@/components/DashboardSkeleton';
 import { SectionCard, StatTile } from '@/components/ui';
 import { useToast } from '@/contexts/ToastContext';
 import { useCycle } from '@/hooks/useCycle';
@@ -12,13 +13,17 @@ import { useSituations } from '@/hooks/useSituations';
 import { formatCurrency, formatDateTime, formatShortDate } from '@/lib/storage';
 
 export default function DashboardPage() {
-  const { profile } = useProfile();
+  const { profile, loading: profileLoading } = useProfile();
   const { currentCycle, closeCurrentCycle } = useCycle();
   const { addEntry, removeEntry } = useEntries();
   const { situations } = useSituations();
   const { showToast } = useToast();
   const [pendingUndoId, setPendingUndoId] = useState<string | null>(null);
   const [isCloseDialogOpen, setIsCloseDialogOpen] = useState(false);
+
+  if (profileLoading) {
+    return <DashboardSkeleton />;
+  }
 
   if (!profile || !currentCycle) {
     return null;

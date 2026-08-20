@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
+import { useAuthToast } from '@/hooks/useAuthToast';
 import GoogleLoginButton from '@/components/GoogleLoginButton';
 import FacebookLoginButton from '@/components/FacebookLoginButton';
 
@@ -8,28 +9,29 @@ export default function LoginPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [isSignUp, setIsSignUp] = useState(false);
-  const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const { signIn, signUp } = useAuth();
+  const { showError, showSuccess } = useAuthToast();
   const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError('');
     setIsLoading(true);
 
     try {
       if (isSignUp) {
         await signUp(email, password);
-        setError('');
-        alert('✨ Success! Check your email to confirm your account.');
+        showSuccess(
+          'Conta Criada!',
+          'Verifique seu email para confirmar sua conta.'
+        );
       } else {
         await signIn(email, password);
         navigate('/', { replace: true });
       }
     } catch (err: any) {
       console.error('Auth error:', err);
-      setError(err.message || 'An error occurred. Please try again.');
+      showError(err);
     } finally {
       setIsLoading(false);
     }
@@ -105,12 +107,6 @@ export default function LoginPage() {
             )}
           </div>
 
-          {error && (
-            <div className="p-3 bg-red-50 border border-red-200 rounded-lg">
-              <p className="text-red-700 text-sm">{error}</p>
-            </div>
-          )}
-
           <button
             type="submit"
             disabled={isLoading}
@@ -132,7 +128,6 @@ export default function LoginPage() {
           <button
             onClick={() => {
               setIsSignUp(!isSignUp);
-              setError('');
             }}
             disabled={isLoading}
             className="text-sm text-purple-600 hover:text-purple-700 font-medium disabled:opacity-50"

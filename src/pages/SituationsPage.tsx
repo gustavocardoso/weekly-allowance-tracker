@@ -4,6 +4,7 @@ import Button from '@/components/Button';
 import ConfirmDialog from '@/components/ConfirmDialog';
 import Input from '@/components/Input';
 import Select from '@/components/Select';
+import SituationsSkeleton from '@/components/SituationsSkeleton';
 import { EmptyState, SectionCard } from '@/components/ui';
 import { useToast } from '@/contexts/ToastContext';
 import { useSituations } from '@/hooks/useSituations';
@@ -207,11 +208,15 @@ function SituationRow({ situation }: { situation: Situation }) {
 }
 
 export default function SituationsPage() {
-  const { situations, addSituation } = useSituations();
+  const { situations, addSituation, loading } = useSituations();
   const { showToast } = useToast();
 
   const active = useMemo(() => situations.filter((situation) => situation.active), [situations]);
   const inactive = useMemo(() => situations.filter((situation) => !situation.active), [situations]);
+
+  if (loading) {
+    return <SituationsSkeleton />;
+  }
 
   return (
     <div className="space-y-6">

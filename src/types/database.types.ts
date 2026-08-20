@@ -13,112 +13,133 @@ export interface Database {
         Row: {
           id: string
           child_name: string
-          emoji: string
-          base_amount: number
+          child_emoji: string
+          base_allowance_cents: number
+          currency: string
           created_at: string
           updated_at: string
         }
         Insert: {
           id: string
           child_name: string
-          emoji: string
-          base_amount: number
+          child_emoji: string
+          base_allowance_cents: number
+          currency?: string
           created_at?: string
           updated_at?: string
         }
         Update: {
           id?: string
           child_name?: string
-          emoji?: string
-          base_amount?: number
+          child_emoji?: string
+          base_allowance_cents?: number
+          currency?: string
           created_at?: string
           updated_at?: string
         }
       }
       situations: {
         Row: {
-          id: number
+          id: string
           user_id: string
           name: string
           emoji: string
           type: 'reward' | 'penalty'
-          amount: number
-          is_active: boolean
+          amount_cents: number
+          active: boolean
+          sort_order: number
           created_at: string
+          updated_at: string
         }
         Insert: {
-          id?: number
+          id?: string
           user_id: string
           name: string
           emoji: string
           type: 'reward' | 'penalty'
-          amount: number
-          is_active?: boolean
+          amount_cents: number
+          active?: boolean
+          sort_order?: number
           created_at?: string
+          updated_at?: string
         }
         Update: {
-          id?: number
+          id?: string
           user_id?: string
           name?: string
           emoji?: string
           type?: 'reward' | 'penalty'
-          amount?: number
-          is_active?: boolean
+          amount_cents?: number
+          active?: boolean
+          sort_order?: number
           created_at?: string
+          updated_at?: string
         }
       }
       cycles: {
         Row: {
-          id: number
+          id: string
           user_id: string
           start_date: string
           end_date: string
-          base_amount: number
-          is_closed: boolean
+          status: 'open' | 'closed'
+          base_amount_cents: number
+          closed_at: string | null
           created_at: string
+          updated_at: string
         }
         Insert: {
-          id?: number
+          id?: string
           user_id: string
           start_date: string
           end_date: string
-          base_amount: number
-          is_closed?: boolean
+          status?: 'open' | 'closed'
+          base_amount_cents: number
+          closed_at?: string | null
           created_at?: string
+          updated_at?: string
         }
         Update: {
-          id?: number
+          id?: string
           user_id?: string
           start_date?: string
           end_date?: string
-          base_amount?: number
-          is_closed?: boolean
+          status?: 'open' | 'closed'
+          base_amount_cents?: number
+          closed_at?: string | null
           created_at?: string
+          updated_at?: string
         }
       }
       entries: {
         Row: {
-          id: number
+          id: string
           user_id: string
-          cycle_id: number
-          situation_id: number
-          amount: number
+          cycle_id: string
+          situation_id: string
+          type: 'reward' | 'penalty'
+          amount_cents: number
+          note: string | null
           created_at: string
         }
         Insert: {
-          id?: number
+          id?: string
           user_id: string
-          cycle_id: number
-          situation_id: number
-          amount: number
+          cycle_id: string
+          situation_id: string
+          type: 'reward' | 'penalty'
+          amount_cents: number
+          note?: string | null
           created_at?: string
         }
         Update: {
-          id?: number
+          id?: string
           user_id?: string
-          cycle_id?: number
-          situation_id?: number
-          amount?: number
+          cycle_id?: string
+          situation_id?: string
+          type?: 'reward' | 'penalty'
+          amount_cents?: number
+          note?: string | null
           created_at?: string
         }
       }

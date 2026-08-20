@@ -5,6 +5,7 @@ import Button from '@/components/Button';
 import ConfirmDialog from '@/components/ConfirmDialog';
 import Input from '@/components/Input';
 import Select from '@/components/Select';
+import SettingsSkeleton from '@/components/SettingsSkeleton';
 import { SectionCard } from '@/components/ui';
 import { useAppContext } from '@/contexts/AppContext';
 import { useAuth } from '@/contexts/AuthContext';
@@ -28,7 +29,7 @@ const childEmojiOptions = [
 ];
 
 export default function SettingsPage() {
-  const { profile, updateProfile } = useProfile();
+  const { profile, updateProfile, loading: profileLoading } = useProfile();
   const { exportData, exportDatabase, importDataFile, resetAllData, error } = useAppContext();
   const { user, isConfigured, signOut } = useAuth();
   const { showToast } = useToast();
@@ -51,6 +52,10 @@ export default function SettingsPage() {
     setChildEmoji(profile.childEmoji);
     setBaseAmount(String(profile.baseAmountCents / 100));
   }, [profile]);
+
+  if (profileLoading) {
+    return <SettingsSkeleton />;
+  }
 
   if (!profile) {
     return null;
