@@ -50,6 +50,7 @@ function RoutedApp() {
       <Route path="/reset-password" element={<ResetPasswordPage />} />
       <Route path="/update-password" element={<UpdatePasswordPage />} />
       <Route path="/confirm-email" element={<EmailConfirmationPage />} />
+      <Route path="/data-deletion" element={<DataDeletionPage />} />
       
       {/* Protected routes */}
       <Route path="/setup" element={<ProtectedRoute><SetupPage /></ProtectedRoute>} />
