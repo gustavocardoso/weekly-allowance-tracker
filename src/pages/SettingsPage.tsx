@@ -183,13 +183,13 @@ export default function SettingsPage() {
       <SectionCard className="border-2 border-penalty-200 bg-penalty-50">
         <h2 className="text-2xl font-bold text-penalty-900">Danger zone</h2>
         <p className="mt-2 text-sm text-penalty-800">This action cannot be undone. All profile data, situations, cycles, and entries will be permanently deleted.</p>
-        <Button 
-          variant="danger" 
-          className="mt-4 w-full !bg-penalty-700 !text-white hover:!bg-penalty-800 sm:w-auto" 
+        <button
+          type="button"
+          className="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-xl bg-penalty-700 px-5 py-3 text-sm font-semibold text-white shadow-sm transition-all duration-200 hover:bg-penalty-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-penalty-500 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 disabled:saturate-50 sm:w-auto sm:text-base"
           onClick={() => setShowResetDialog(true)}
         >
           Clear all data
-        </Button>
+        </button>
       </SectionCard>
 
       <SectionCard>
