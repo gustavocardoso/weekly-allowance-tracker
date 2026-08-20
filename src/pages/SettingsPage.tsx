@@ -7,6 +7,7 @@ import Input from '@/components/Input';
 import Select from '@/components/Select';
 import { SectionCard } from '@/components/ui';
 import { useAppContext } from '@/contexts/AppContext';
+import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/contexts/ToastContext';
 import { useProfile } from '@/hooks/useProfile';
 import { createBackupFileName, formatCurrency } from '@/lib/storage';
@@ -29,6 +30,7 @@ const childEmojiOptions = [
 export default function SettingsPage() {
   const { profile, updateProfile } = useProfile();
   const { exportData, exportDatabase, importDataFile, resetAllData, error } = useAppContext();
+  const { user, isConfigured, signOut } = useAuth();
   const { showToast } = useToast();
   const navigate = useNavigate();
   const fileInputRef = useRef<HTMLInputElement | null>(null);
@@ -196,6 +198,33 @@ export default function SettingsPage() {
         <h2 className="text-2xl font-bold">About</h2>
         <p className="mt-3 text-slate-600">This playful app tracks weekly allowance, rewards, and penalties with a Monday-to-Sunday cycle and child-friendly visuals.</p>
       </SectionCard>
+
+      {isConfigured && user && (
+        <SectionCard>
+          <h2 className="text-2xl font-bold">Account</h2>
+          <p className="mt-2 text-sm text-slate-600">
+            Signed in as: <span className="font-medium">{user.email}</span>
+          </p>
+          <Button
+            variant="secondary"
+            className="mt-4 w-full sm:w-auto"
+            onClick={async () => {
+              try {
+                await signOut();
+                navigate('/login');
+              } catch (err: any) {
+                showToast({
+                  title: 'Sign out failed',
+                  description: err.message,
+                  variant: 'error',
+                });
+              }
+            }}
+          >
+            Sign Out
+          </Button>
+        </SectionCard>
+      )}
 
       <ConfirmDialog
         isOpen={showBaseAmountDialog}
