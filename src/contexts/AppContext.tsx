@@ -294,6 +294,12 @@ export function AppProvider({ children }: { children: ReactNode }) {
           throw new Error('Situation not found.');
         }
 
+        // Convert string ID to number and validate it
+        const numericId = Number(id);
+        if (!Number.isInteger(numericId) || numericId <= 0) {
+          throw new Error('Invalid situation ID.');
+        }
+
         let ordered = current.situations.slice().sort((a, b) => a.sortOrder - b.sortOrder);
         if (typeof updates.sortOrder === 'number') {
           console.log('[AppContext] Reordering situation...');
@@ -310,7 +316,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
         }
 
         const target = ordered.find((situation) => situation.id === id) ?? existing;
-        const updated = await situationService.update(Number(id), {
+        const updated = await situationService.update(numericId, {
           name: (updates.name ?? target.name).trim(),
           emoji: updates.emoji ?? target.emoji,
           amountCents: updates.amountCents ?? target.amountCents,
@@ -349,7 +355,13 @@ export function AppProvider({ children }: { children: ReactNode }) {
     async (id: string) => {
       console.log('[AppContext] deleteSituation called:', id);
       try {
-        await situationService.remove(Number(id));
+        // Convert string ID to number and validate it
+        const numericId = Number(id);
+        if (!Number.isInteger(numericId) || numericId <= 0) {
+          throw new Error('Invalid situation ID.');
+        }
+        
+        await situationService.remove(numericId);
         console.log('[AppContext] Situation deleted from database');
         
         // Refresh from database to get ALL remaining situations
