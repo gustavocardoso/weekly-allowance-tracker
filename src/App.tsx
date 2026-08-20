@@ -8,12 +8,15 @@ import { AuthProvider } from '@/contexts/AuthContext';
 import AuthCallbackPage from '@/pages/AuthCallbackPage';
 import CycleDetailPage from '@/pages/CycleDetailPage';
 import DashboardPage from '@/pages/DashboardPage';
+import EmailConfirmationPage from '@/pages/EmailConfirmationPage';
 import HistoryPage from '@/pages/HistoryPage';
 import LoginPage from '@/pages/LoginPage';
+import ResetPasswordPage from '@/pages/ResetPasswordPage';
 import SettingsPage from '@/pages/SettingsPage';
 import SetupPage from '@/pages/SetupPage';
 import SituationsPage from '@/pages/SituationsPage';
 import StatsPage from '@/pages/StatsPage';
+import UpdatePasswordPage from '@/pages/UpdatePasswordPage';
 
 function ProtectedLayout() {
   const { profile, loading, error } = useAppContext();
@@ -44,6 +47,9 @@ function RoutedApp() {
       {/* Public routes */}
       <Route path="/login" element={<LoginPage />} />
       <Route path="/auth/callback" element={<AuthCallbackPage />} />
+      <Route path="/reset-password" element={<ResetPasswordPage />} />
+      <Route path="/update-password" element={<UpdatePasswordPage />} />
+      <Route path="/confirm-email" element={<EmailConfirmationPage />} />
       
       {/* Protected routes */}
       <Route path="/setup" element={<ProtectedRoute><SetupPage /></ProtectedRoute>} />
