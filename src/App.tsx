@@ -12,6 +12,7 @@ import DataDeletionPage from '@/pages/DataDeletionPage';
 import EmailConfirmationPage from '@/pages/EmailConfirmationPage';
 import HistoryPage from '@/pages/HistoryPage';
 import LoginPage from '@/pages/LoginPage';
+import PrivacyPolicyPage from '@/pages/PrivacyPolicyPage';
 import ResetPasswordPage from '@/pages/ResetPasswordPage';
 import SettingsPage from '@/pages/SettingsPage';
 import SetupPage from '@/pages/SetupPage';
@@ -52,6 +53,7 @@ function RoutedApp() {
       <Route path="/update-password" element={<UpdatePasswordPage />} />
       <Route path="/confirm-email" element={<EmailConfirmationPage />} />
       <Route path="/data-deletion" element={<DataDeletionPage />} />
+      <Route path="/privacy" element={<PrivacyPolicyPage />} />
       
       {/* Protected routes */}
       <Route path="/setup" element={<ProtectedRoute><SetupPage /></ProtectedRoute>} />
