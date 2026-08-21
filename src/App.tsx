@@ -8,6 +8,7 @@ import { AuthProvider } from '@/contexts/AuthContext';
 import AuthCallbackPage from '@/pages/AuthCallbackPage';
 import CycleDetailPage from '@/pages/CycleDetailPage';
 import DashboardPage from '@/pages/DashboardPage';
+import DataDeletionPage from '@/pages/DataDeletionPage';
 import EmailConfirmationPage from '@/pages/EmailConfirmationPage';
 import HistoryPage from '@/pages/HistoryPage';
 import LoginPage from '@/pages/LoginPage';
