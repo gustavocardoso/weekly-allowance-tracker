@@ -1,17 +1,18 @@
-import clsx from 'clsx';
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
+import { TrendingUp, TrendingDown } from 'lucide-react';
 
-import Button from '@/components/Button';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent } from '@/components/ui/card';
 import ConfirmDialog from '@/components/ConfirmDialog';
 import DashboardSkeleton from '@/components/DashboardSkeleton';
-import { SectionCard, StatTile } from '@/components/ui';
 import { useToast } from '@/contexts/ToastContext';
 import { useCycle } from '@/hooks/useCycle';
 import { useEntries } from '@/hooks/useEntries';
 import { useProfile } from '@/hooks/useProfile';
 import { useSituations } from '@/hooks/useSituations';
-import { formatCurrency, formatDateTime, formatShortDate } from '@/lib/storage';
+import { formatCurrency, formatShortDate } from '@/lib/storage';
+import { format } from 'date-fns';
 
 export default function DashboardPage() {
   const { profile, loading: profileLoading } = useProfile();
@@ -31,7 +32,6 @@ export default function DashboardPage() {
   }
 
   const activeSituations = situations.filter((situation) => situation.active);
-  const totalAnnouncement = `Current total is ${formatCurrency(currentCycle.totals.finalTotalCents)}`;
 
   const handleQuickEntry = (situationId: string) => {
     const situation = activeSituations.find((item) => item.id === situationId);
@@ -63,149 +63,234 @@ export default function DashboardPage() {
     });
   };
 
+  const formatEntryTimestamp = (dateString: string) => {
+    const date = new Date(dateString);
+    const dayName = format(date, 'EEEE');
+    const time = format(date, 'h:mm a');
+    return `${dayName} • ${time}`;
+  };
+
   return (
-    <div className="space-y-6">
-      <SectionCard className="bg-confetti">
-        <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
-          <div>
-            <p className="text-sm font-bold uppercase tracking-[0.3em] text-primary-700">Current cycle</p>
-            <h2 className="mt-2 text-4xl font-black text-slate-950">
+    <>
+      {/* Hero Section - Active Cycle */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <Card className="md:col-span-2 rounded-3xl border border-black/5 shadow-sm relative overflow-hidden">
+          <CardContent className="p-8">
+            <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-primary mb-2 block">
+              Current Cycle
+            </span>
+            <h1 className="text-4xl font-extrabold tracking-tighter">
               {profile.childName} {profile.childEmoji}
-            </h2>
-            <p className="mt-2 text-slate-800">
-              {formatShortDate(currentCycle.startDate)} – {formatShortDate(currentCycle.endDate)}
+            </h1>
+            <p className="text-muted-foreground text-sm mt-1">
+              {formatShortDate(currentCycle.startDate)} — {formatShortDate(currentCycle.endDate)}
             </p>
-          </div>
-          <div className="rounded-3xl bg-white/90 px-6 py-4 text-center shadow-lg" aria-live="polite" aria-atomic="true">
-            <p className="text-sm font-semibold text-slate-700">Current total</p>
-            <p className="text-4xl font-black text-primary-800">{formatCurrency(currentCycle.totals.finalTotalCents)}</p>
-            <span className="sr-only">{totalAnnouncement}</span>
-          </div>
-        </div>
-      </SectionCard>
 
-      <div className="grid gap-4 md:grid-cols-5">
-        <StatTile label="Base" value={formatCurrency(currentCycle.totals.baseAmountCents)} />
-        <StatTile label="Rewards" value={formatCurrency(currentCycle.totals.rewardTotalCents)} />
-        <StatTile label="Penalties" value={formatCurrency(currentCycle.totals.penaltyTotalCents)} />
-        <StatTile label="Net" value={formatCurrency(currentCycle.totals.netAdjustmentCents)} />
-        <StatTile label="Total" value={formatCurrency(currentCycle.totals.finalTotalCents)} />
-      </div>
-
-      <SectionCard>
-        <div className="flex items-center justify-between gap-3">
-          <div>
-            <h3 className="text-2xl font-bold text-slate-950">Quick entry</h3>
-            <p className="text-sm text-slate-700">Tap to record instantly</p>
-          </div>
-          {pendingUndoId ? <span className="rounded-full bg-primary-100 px-3 py-1 text-xs font-semibold text-primary-800">Undo ready</span> : null}
-        </div>
-        <div className="mt-4 grid gap-2 sm:grid-cols-2 lg:grid-cols-4">
-          {activeSituations.length === 0 ? (
-            <div className="col-span-full rounded-3xl bg-slate-50 p-8 text-center">
-              <div className="mx-auto mb-3 flex h-16 w-16 items-center justify-center rounded-full bg-primary-100 text-3xl">
-                ✨
+            <div className="mt-8 bg-white rounded-2xl p-4 shadow-sm inline-block">
+              <span className="text-sm text-muted-foreground block mb-1">Current total</span>
+              <div className="text-5xl font-extrabold tracking-tighter">
+                {formatCurrency(currentCycle.totals.finalTotalCents)}
               </div>
-              <p className="text-lg font-semibold text-slate-950">No situations yet</p>
-              <p className="mt-2 text-sm text-slate-700">
-                Create situations in Settings to start tracking allowance
-              </p>
-              <Link
-                to="/settings"
-                className="mt-4 inline-block rounded-full bg-primary-600 px-6 py-2 text-sm font-semibold text-white transition-colors hover:bg-primary-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-2"
-              >
-                Go to Settings
-              </Link>
             </div>
-          ) : (
-            activeSituations.map((situation) => (
-              <button
-                key={situation.id}
-                onClick={() => handleQuickEntry(situation.id)}
-                className={clsx(
-                  'group relative flex items-center gap-3 rounded-2xl p-3 text-left transition-all duration-200 hover:scale-[1.02] hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-2 active:scale-[0.98]',
-                  situation.type === 'reward' 
-                    ? 'bg-reward-600 text-white hover:bg-reward-700' 
-                    : 'bg-penalty-600 text-white hover:bg-penalty-700',
-                )}
-                aria-label={`Record ${situation.type} ${situation.name} for ${formatCurrency(situation.amountCents)}`}
+          </CardContent>
+        </Card>
+
+        {/* Close Week Dark Panel */}
+        <Card className="bg-foreground text-background rounded-3xl border-0 shadow-sm">
+          <CardContent className="p-8 h-full flex flex-col justify-between">
+            <div>
+              <h3 className="text-xl font-bold tracking-tight">Close this week</h3>
+              <p className="text-background/60 text-sm mt-2 leading-relaxed">
+                Lock this cycle and start a fresh week
+              </p>
+            </div>
+            <div className="space-y-4 mt-8">
+              <div className="bg-white/10 rounded-2xl p-4">
+                <span className="text-[10px] uppercase tracking-widest text-white/40 block">
+                  Final payout
+                </span>
+                <span className="text-2xl font-bold">{formatCurrency(currentCycle.totals.finalTotalCents)}</span>
+              </div>
+              <Button 
+                onClick={() => setIsCloseDialogOpen(true)}
+                className="w-full bg-background text-foreground hover:bg-background/90 font-bold py-6 rounded-2xl"
               >
-                <span 
-                  className={clsx(
-                    'flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-xl text-2xl shadow-sm transition-transform group-hover:scale-110',
-                    situation.type === 'reward' ? 'bg-white/20' : 'bg-white/20'
-                  )}
-                  aria-hidden="true"
-                >
-                  {situation.emoji}
-                </span>
-                <div className="flex-1 min-w-0">
-                  <p className="font-semibold text-sm leading-tight truncate">{situation.name}</p>
-                  <p className="mt-0.5 text-xs font-bold text-white/90">
-                    {situation.type === 'reward' ? '+' : '-'}{formatCurrency(situation.amountCents)}
-                  </p>
-                </div>
-                <span 
-                  className="absolute right-2 top-2 rounded-full px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider bg-white/20 text-white"
-                >
-                  {situation.type === 'reward' ? '+' : '−'}
-                </span>
-              </button>
-            ))
-          )}
-        </div>
-      </SectionCard>
-
-      <div className="grid gap-4 lg:grid-cols-[1.2fr_auto] lg:items-start">
-        <SectionCard>
-          <div className="flex items-center justify-between gap-3">
-            <h3 className="text-2xl font-bold text-slate-950">This week&apos;s entries</h3>
-            <span className="text-sm text-slate-700">Newest first</span>
-          </div>
-          <div className="mt-4 space-y-3" aria-live="polite">
-            {currentCycle.entries.length === 0 ? (
-              <p className="rounded-3xl bg-slate-50 p-4 text-sm text-slate-700">No entries yet. Start with a quick tap above.</p>
-            ) : (
-              currentCycle.entries.map((entry) => (
-                <article key={entry.id} className="flex items-center justify-between rounded-3xl bg-slate-50 px-4 py-3">
-                  <div>
-                    <p className="font-semibold text-slate-950">
-                      {entry.situation?.emoji ?? '✨'} {entry.situation?.name ?? 'Entry'}
-                    </p>
-                    <p className="text-sm text-slate-700">{formatDateTime(entry.createdAt)}</p>
-                  </div>
-                  <p className={clsx('font-bold', entry.type === 'reward' ? 'text-reward-800' : 'text-penalty-800')}>
-                    {entry.type === 'reward' ? '+' : '-'}
-                    {formatCurrency(entry.amountCents)}
-                  </p>
-                </article>
-              ))
-            )}
-          </div>
-        </SectionCard>
-
-        <SectionCard className="bg-slate-950 text-white lg:w-80">
-          <h3 className="text-2xl font-bold">Close this week</h3>
-          <p className="mt-2 text-sm text-slate-200">Lock this cycle and start a fresh week</p>
-          <div className="mt-5 rounded-3xl bg-white/10 p-4">
-            <p className="text-sm text-slate-200">Final payout</p>
-            <p className="mt-2 text-4xl font-black">{formatCurrency(currentCycle.totals.finalTotalCents)}</p>
-          </div>
-          <Button className="mt-5 w-full" variant="secondary" onClick={() => setIsCloseDialogOpen(true)}>
-            Close week
-          </Button>
-        </SectionCard>
+                Close Cycle
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
       </div>
 
+      {/* Stats Grid */}
+      <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+        <Card className="rounded-2xl border border-black/5 shadow-sm">
+          <CardContent className="p-5">
+            <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">
+              Base
+            </span>
+            <div className="text-xl font-bold mt-1">{formatCurrency(currentCycle.totals.baseAmountCents)}</div>
+          </CardContent>
+        </Card>
+        <Card className="rounded-2xl border border-black/5 shadow-sm">
+          <CardContent className="p-5">
+            <span className="text-[10px] font-bold text-accent uppercase tracking-wider">
+              Rewards
+            </span>
+            <div className="text-xl font-bold mt-1 text-accent">{formatCurrency(currentCycle.totals.rewardTotalCents)}</div>
+          </CardContent>
+        </Card>
+        <Card className="rounded-2xl border border-black/5 shadow-sm">
+          <CardContent className="p-5">
+            <span className="text-[10px] font-bold text-destructive uppercase tracking-wider">
+              Penalties
+            </span>
+            <div className="text-xl font-bold mt-1 text-destructive">{formatCurrency(currentCycle.totals.penaltyTotalCents)}</div>
+          </CardContent>
+        </Card>
+        <Card className="rounded-2xl border border-black/5 shadow-sm">
+          <CardContent className="p-5">
+            <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">
+              Net
+            </span>
+            <div className="text-xl font-bold mt-1">{formatCurrency(currentCycle.totals.netAdjustmentCents)}</div>
+          </CardContent>
+        </Card>
+        <Card className="rounded-2xl border border-black/5 shadow-sm col-span-2 md:col-span-1">
+          <CardContent className="p-5">
+            <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">
+              Total
+            </span>
+            <div className="text-xl font-bold mt-1">{formatCurrency(currentCycle.totals.finalTotalCents)}</div>
+          </CardContent>
+        </Card>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        {/* Quick Entry */}
+        <Card className="rounded-3xl border border-black/5 shadow-sm">
+          <CardContent className="p-8">
+            <div className="flex items-center justify-between mb-8">
+              <div>
+                <h3 className="font-bold text-lg tracking-tight">Quick entry</h3>
+                <p className="text-sm text-muted-foreground">Tap to record instantly</p>
+              </div>
+              {pendingUndoId && (
+                <span className="rounded-full bg-primary/10 px-3 py-1 text-xs font-semibold text-primary">
+                  Undo ready
+                </span>
+              )}
+            </div>
+            
+            {activeSituations.length === 0 ? (
+              <div className="py-12 flex flex-col items-center text-center">
+                <div className="size-16 bg-muted rounded-2xl border border-black/5 mb-4 grid place-items-center">
+                  ✨
+                </div>
+                <p className="text-lg font-semibold text-foreground">No situations yet</p>
+                <p className="text-muted-foreground text-sm max-w-[240px] mt-2">
+                  Create situations in Settings to start tracking allowance
+                </p>
+                <Link
+                  to="/settings"
+                  className="mt-4 inline-block rounded-full bg-primary px-6 py-2 text-sm font-semibold text-primary-foreground hover:bg-primary/90 transition-colors"
+                >
+                  Go to Settings
+                </Link>
+              </div>
+            ) : (
+              <div className="grid gap-3 sm:grid-cols-2">
+                {activeSituations.map((situation) => (
+                  <button
+                    key={situation.id}
+                    onClick={() => handleQuickEntry(situation.id)}
+                    className={`group relative flex items-center gap-3 rounded-2xl p-4 text-left transition-all hover:scale-[1.02] hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 active:scale-[0.98] ${
+                      situation.type === 'reward'
+                        ? 'bg-accent text-accent-foreground'
+                        : 'bg-destructive text-destructive-foreground'
+                    }`}
+                  >
+                    <span className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl text-xl bg-white/20">
+                      {situation.emoji}
+                    </span>
+                    <div className="flex-1 min-w-0">
+                      <p className="font-semibold text-sm truncate">{situation.name}</p>
+                      <p className="text-xs font-bold opacity-90">
+                        {situation.type === 'reward' ? '+' : '-'}{formatCurrency(situation.amountCents)}
+                      </p>
+                    </div>
+                  </button>
+                ))}
+              </div>
+            )}
+          </CardContent>
+        </Card>
+
+        {/* Weekly Entries List */}
+        <Card className="rounded-3xl border border-black/5 shadow-sm">
+          <CardContent className="p-8">
+            <div className="flex items-center justify-between mb-6">
+              <h3 className="font-bold text-lg tracking-tight">This week's entries</h3>
+              <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">
+                Newest first
+              </span>
+            </div>
+            
+            {currentCycle.entries.length === 0 ? (
+              <div className="py-12 text-center">
+                <p className="text-muted-foreground text-sm">
+                  No entries yet. Start with a quick tap above.
+                </p>
+              </div>
+            ) : (
+              <div className="space-y-4">
+                {currentCycle.entries.map((entry, index) => (
+                  <div 
+                    key={entry.id} 
+                    className={`flex items-center justify-between py-3 ${
+                      index < currentCycle.entries.length - 1 ? 'border-b border-border' : ''
+                    }`}
+                  >
+                    <div className="flex items-center gap-4">
+                      <div className={`size-10 rounded-xl flex items-center justify-center ${
+                        entry.type === 'reward' 
+                          ? 'bg-accent/10 text-accent' 
+                          : 'bg-destructive/10 text-destructive'
+                      }`}>
+                        {entry.type === 'reward' ? <TrendingUp className="size-5" /> : <TrendingDown className="size-5" />}
+                      </div>
+                      <div>
+                        <p className="font-bold text-sm">
+                          {entry.situation?.emoji} {entry.situation?.name || 'Entry'}
+                        </p>
+                        <p className="text-[10px] text-muted-foreground uppercase">
+                          {formatEntryTimestamp(entry.createdAt)}
+                        </p>
+                      </div>
+                    </div>
+                    <span className={`font-bold ${
+                      entry.type === 'reward' ? 'text-accent' : 'text-destructive'
+                    }`}>
+                      {entry.type === 'reward' ? '+' : '-'}{formatCurrency(entry.amountCents)}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            )}
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Close Cycle Dialog */}
       <ConfirmDialog
         isOpen={isCloseDialogOpen}
-        title="Close this week?"
-        message={`Close this week for ${formatCurrency(currentCycle.totals.finalTotalCents)}? A new Monday-to-Sunday cycle will be created automatically.`}
-        confirmLabel="Close week"
-        cancelLabel="Keep editing"
-        onConfirm={handleCloseCycle}
         onCancel={() => setIsCloseDialogOpen(false)}
+        onConfirm={handleCloseCycle}
+        title="Close this week's cycle?"
+        message="This will lock all entries and start a fresh week. The final payout will be recorded."
+        confirmLabel="Close Cycle"
+        tone="default"
       />
-    </div>
+    </>
   );
 }
