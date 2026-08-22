@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { TrendingUp, TrendingDown } from 'lucide-react';
+import { TrendingUp, TrendingDown, Wallet, Plus } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
@@ -19,7 +19,6 @@ export default function DashboardPage() {
   const { addEntry, removeEntry } = useEntries();
   const { situations } = useSituations();
   const { showToast } = useToast();
-  const [pendingUndoId, setPendingUndoId] = useState<string | null>(null);
   const [isCloseDialogOpen, setIsCloseDialogOpen] = useState(false);
 
   if (profileLoading) {
@@ -35,7 +34,6 @@ export default function DashboardPage() {
   const handleQuickEntry = (situationId: string) => {
     const situation = activeSituations.find((item) => item.id === situationId);
     const entry = addEntry(situationId);
-    setPendingUndoId(entry.id);
     showToast({
       title: 'Entry added',
       description: situation ? `${situation.name} recorded. Totals updated right away.` : 'Totals updated right away.',
@@ -45,7 +43,6 @@ export default function DashboardPage() {
         label: 'Undo',
         onClick: () => {
           removeEntry(entry.id);
-          setPendingUndoId(null);
         },
       },
     });
@@ -53,7 +50,6 @@ export default function DashboardPage() {
 
   const handleCloseCycle = () => {
     closeCurrentCycle();
-    setPendingUndoId(null);
     setIsCloseDialogOpen(false);
     showToast({
       title: 'Week closed',
@@ -71,9 +67,9 @@ export default function DashboardPage() {
 
   return (
     <>
-      {/* Hero Section - Active Cycle */}
+      {/* Hero Section */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <Card className="md:col-span-2 rounded-3xl border border-black/5 shadow-sm relative overflow-hidden">
+        <Card className="md:col-span-2 rounded-3xl border border-black/5 shadow-sm relative overflow-hidden flex flex-col justify-between">
           <CardContent className="p-8 relative z-10">
             <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-primary mb-2 block">
               Active Cycle
@@ -88,9 +84,7 @@ export default function DashboardPage() {
             <div className="flex items-end justify-between mt-12">
               <div>
                 <span className="text-sm text-muted-foreground block mb-1">Current Balance</span>
-                <div className="text-5xl font-extrabold tracking-tighter">
-                  {formatCurrency(currentCycle.totals.finalTotalCents)}
-                </div>
+                <div className="text-5xl font-extrabold tracking-tighter">{formatCurrency(currentCycle.totals.finalTotalCents)}</div>
               </div>
               <div className="flex items-center gap-3">
                 <div className="size-12 rounded-full ring-2 ring-white shadow-sm bg-primary/10 flex items-center justify-center text-2xl">
@@ -106,8 +100,8 @@ export default function DashboardPage() {
         </Card>
 
         {/* Close Week Dark Panel */}
-        <Card className="bg-foreground text-background rounded-3xl border-0 shadow-sm">
-          <CardContent className="p-8 h-full flex flex-col justify-between">
+        <Card className="bg-foreground text-background rounded-3xl border-0 shadow-sm flex flex-col justify-between">
+          <CardContent className="p-8">
             <div>
               <h3 className="text-xl font-bold tracking-tight">Ready to settle?</h3>
               <p className="text-background/60 text-sm mt-2 leading-relaxed">
@@ -122,8 +116,8 @@ export default function DashboardPage() {
                 <span className="text-2xl font-bold">{formatCurrency(currentCycle.totals.finalTotalCents)}</span>
               </div>
               <Button 
-                onClick={() => setIsCloseDialogOpen(true)}
                 className="w-full bg-background text-foreground hover:bg-background/90 font-bold py-6 rounded-2xl"
+                onClick={() => setIsCloseDialogOpen(true)}
               >
                 Close Cycle
               </Button>
@@ -181,21 +175,16 @@ export default function DashboardPage() {
         <Card className="rounded-3xl border border-black/5 shadow-sm">
           <CardContent className="p-8">
             <div className="flex items-center justify-between mb-8">
-              <div>
-                <h3 className="font-bold text-lg tracking-tight">Quick entry</h3>
-                <p className="text-sm text-muted-foreground">Tap to record instantly</p>
-              </div>
-              {pendingUndoId && (
-                <span className="rounded-full bg-primary/10 px-3 py-1 text-xs font-semibold text-primary">
-                  Undo ready
-                </span>
-              )}
+              <h3 className="font-bold text-lg tracking-tight">Quick Entry</h3>
+              <Button size="icon" className="size-8 rounded-full bg-primary/10 text-primary hover:bg-primary/20">
+                <Plus className="size-4" />
+              </Button>
             </div>
             
             {activeSituations.length === 0 ? (
               <div className="py-12 flex flex-col items-center text-center">
                 <div className="size-16 bg-muted rounded-2xl border border-black/5 mb-4 grid place-items-center">
-                  <span className="text-3xl">💰</span>
+                  <Wallet className="size-6 text-muted-foreground" />
                 </div>
                 <p className="text-muted-foreground text-sm max-w-[200px]">
                   Tap the plus to add a reward or a chore entry for today.
@@ -233,21 +222,18 @@ export default function DashboardPage() {
         <Card className="rounded-3xl border border-black/5 shadow-sm">
           <CardContent className="p-8">
             <div className="flex items-center justify-between mb-6">
-              <h3 className="font-bold text-lg tracking-tight">This week's entries</h3>
+              <h3 className="font-bold text-lg tracking-tight">Weekly Log</h3>
               <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">
-                Newest first
+                Newest First
               </span>
             </div>
-            
-            {currentCycle.entries.length === 0 ? (
-              <div className="py-12 text-center">
-                <p className="text-muted-foreground text-sm">
+            <div className="space-y-4">
+              {currentCycle.entries.length === 0 ? (
+                <p className="text-center text-muted-foreground text-sm py-12">
                   No entries yet. Start with a quick tap above.
                 </p>
-              </div>
-            ) : (
-              <div className="space-y-4">
-                {currentCycle.entries.map((entry, index) => (
+              ) : (
+                currentCycle.entries.map((entry, index) => (
                   <div 
                     key={entry.id} 
                     className={`flex items-center justify-between py-3 ${
@@ -264,7 +250,7 @@ export default function DashboardPage() {
                       </div>
                       <div>
                         <p className="font-bold text-sm">
-                          {entry.situation?.emoji} {entry.situation?.name || 'Entry'}
+                          {entry.situation?.name || 'Entry'}
                         </p>
                         <p className="text-[10px] text-muted-foreground uppercase">
                           {formatEntryTimestamp(entry.createdAt)}
@@ -277,9 +263,9 @@ export default function DashboardPage() {
                       {entry.type === 'reward' ? '+' : '-'}{formatCurrency(entry.amountCents)}
                     </span>
                   </div>
-                ))}
-              </div>
-            )}
+                ))
+              )}
+            </div>
           </CardContent>
         </Card>
       </div>
