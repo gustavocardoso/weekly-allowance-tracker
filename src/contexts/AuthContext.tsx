@@ -117,21 +117,6 @@ export function AuthProvider({ children }: AuthProviderProps) {
     if (error) throw error;
   };
 
-  const signInWithFacebook = async (): Promise<void> => {
-    if (!isSupabaseConfigured) {
-      throw new Error('Supabase is not configured. Please set up environment variables.');
-    }
-
-    const { error } = await supabase.auth.signInWithOAuth({
-      provider: 'facebook',
-      options: {
-        redirectTo: `${window.location.origin}/auth/callback`,
-      },
-    });
-
-    if (error) throw error;
-  };
-
   const signOut = async (): Promise<void> => {
     if (!isSupabaseConfigured) {
       return;
@@ -149,7 +134,6 @@ export function AuthProvider({ children }: AuthProviderProps) {
     signIn,
     signUp,
     signInWithGoogle,
-    signInWithFacebook,
     signOut,
   };
 
