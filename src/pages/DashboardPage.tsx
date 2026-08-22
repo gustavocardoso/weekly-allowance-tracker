@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
 import { TrendingUp, TrendingDown } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
@@ -75,21 +74,32 @@ export default function DashboardPage() {
       {/* Hero Section - Active Cycle */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <Card className="md:col-span-2 rounded-3xl border border-black/5 shadow-sm relative overflow-hidden">
-          <CardContent className="p-8">
+          <CardContent className="p-8 relative z-10">
             <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-primary mb-2 block">
-              Current Cycle
+              Active Cycle
             </span>
-            <h1 className="text-4xl font-extrabold tracking-tighter">
-              {profile.childName} {profile.childEmoji}
+            <h1 className="text-4xl font-extrabold tracking-tighter text-balance">
+              {profile.childName}'s Progress
             </h1>
             <p className="text-muted-foreground text-sm mt-1">
               {formatShortDate(currentCycle.startDate)} — {formatShortDate(currentCycle.endDate)}
             </p>
 
-            <div className="mt-8 bg-white rounded-2xl p-4 shadow-sm inline-block">
-              <span className="text-sm text-muted-foreground block mb-1">Current total</span>
-              <div className="text-5xl font-extrabold tracking-tighter">
-                {formatCurrency(currentCycle.totals.finalTotalCents)}
+            <div className="flex items-end justify-between mt-12">
+              <div>
+                <span className="text-sm text-muted-foreground block mb-1">Current Balance</span>
+                <div className="text-5xl font-extrabold tracking-tighter">
+                  {formatCurrency(currentCycle.totals.finalTotalCents)}
+                </div>
+              </div>
+              <div className="flex items-center gap-3">
+                <div className="size-12 rounded-full ring-2 ring-white shadow-sm bg-primary/10 flex items-center justify-center text-2xl">
+                  {profile.childEmoji}
+                </div>
+                <div className="hidden sm:block">
+                  <p className="text-sm font-semibold text-foreground">{profile.childName}</p>
+                  <p className="text-xs text-muted-foreground">This week's earner</p>
+                </div>
               </div>
             </div>
           </CardContent>
@@ -99,15 +109,15 @@ export default function DashboardPage() {
         <Card className="bg-foreground text-background rounded-3xl border-0 shadow-sm">
           <CardContent className="p-8 h-full flex flex-col justify-between">
             <div>
-              <h3 className="text-xl font-bold tracking-tight">Close this week</h3>
+              <h3 className="text-xl font-bold tracking-tight">Ready to settle?</h3>
               <p className="text-background/60 text-sm mt-2 leading-relaxed">
-                Lock this cycle and start a fresh week
+                Lock this week's entries and transfer the total to the digital vault.
               </p>
             </div>
             <div className="space-y-4 mt-8">
               <div className="bg-white/10 rounded-2xl p-4">
                 <span className="text-[10px] uppercase tracking-widest text-white/40 block">
-                  Final payout
+                  Final Payout
                 </span>
                 <span className="text-2xl font-bold">{formatCurrency(currentCycle.totals.finalTotalCents)}</span>
               </div>
@@ -185,18 +195,11 @@ export default function DashboardPage() {
             {activeSituations.length === 0 ? (
               <div className="py-12 flex flex-col items-center text-center">
                 <div className="size-16 bg-muted rounded-2xl border border-black/5 mb-4 grid place-items-center">
-                  ✨
+                  <span className="text-3xl">💰</span>
                 </div>
-                <p className="text-lg font-semibold text-foreground">No situations yet</p>
-                <p className="text-muted-foreground text-sm max-w-[240px] mt-2">
-                  Create situations in Settings to start tracking allowance
+                <p className="text-muted-foreground text-sm max-w-[200px]">
+                  Tap the plus to add a reward or a chore entry for today.
                 </p>
-                <Link
-                  to="/settings"
-                  className="mt-4 inline-block rounded-full bg-primary px-6 py-2 text-sm font-semibold text-primary-foreground hover:bg-primary/90 transition-colors"
-                >
-                  Go to Settings
-                </Link>
               </div>
             ) : (
               <div className="grid gap-3 sm:grid-cols-2">
