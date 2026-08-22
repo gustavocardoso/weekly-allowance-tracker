@@ -13,11 +13,11 @@ export function Header() {
           <img
             src="/logo.png"
             alt="Pocket Parade logo"
-            className="size-8 rounded-lg bg-primary/10 object-contain"
-            width={32}
-            height={32}
+            className="size-12 rounded-xl bg-primary/10 object-contain p-2"
+            width={48}
+            height={48}
           />
-          <span className="font-extrabold tracking-tight text-lg uppercase">Pocket</span>
+          <span className="font-extrabold tracking-tight text-xl uppercase">Pocket</span>
         </div>
 
         {/* Desktop Navigation */}
