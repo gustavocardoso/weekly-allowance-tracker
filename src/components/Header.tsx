@@ -20,17 +20,17 @@ export function Header() {
         </div>
 
         {/* Desktop Navigation */}
-        <div className="hidden md:flex items-center gap-6 text-sm font-medium text-muted-foreground">
-          <Link to="/" className="hover:text-foreground transition-colors" aria-label="Dashboard">
+        <div className="hidden md:flex items-center gap-6 text-sm font-medium text-foreground">
+          <Link to="/" className="hover:opacity-60 transition-opacity" aria-label="Dashboard">
             Dashboard
           </Link>
-          <Link to="/vault" className="hover:text-foreground transition-colors" aria-label="Vault">
+          <Link to="/vault" className="hover:opacity-60 transition-opacity" aria-label="Vault">
             Vault
           </Link>
-          <Link to="/history" className="hover:text-foreground transition-colors" aria-label="History">
+          <Link to="/history" className="hover:opacity-60 transition-opacity" aria-label="History">
             History
           </Link>
-          <Link to="/settings" className="hover:text-foreground transition-colors" aria-label="Settings">
+          <Link to="/settings" className="hover:opacity-60 transition-opacity" aria-label="Settings">
             Settings
           </Link>
         </div>
