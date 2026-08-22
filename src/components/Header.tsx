@@ -1,8 +1,9 @@
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { useProfile } from '@/hooks/useProfile';
 
 export function Header() {
   const { profile } = useProfile();
+  const location = useLocation();
 
   return (
     <nav className="sticky top-0 z-50 bg-background/80 backdrop-blur-md border-b border-border px-4 py-3">
@@ -20,17 +21,33 @@ export function Header() {
         </div>
 
         {/* Desktop Navigation */}
-        <div className="hidden md:flex items-center gap-6 text-sm font-medium text-foreground">
-          <Link to="/" className="hover:opacity-60 transition-opacity" aria-label="Dashboard">
+        <div className="hidden md:flex items-center gap-6 text-sm text-foreground">
+          <Link 
+            to="/" 
+            className={`hover:opacity-60 transition-opacity ${location.pathname === '/' ? 'font-medium' : 'font-normal'}`}
+            aria-label="Dashboard"
+          >
             Dashboard
           </Link>
-          <Link to="/vault" className="hover:opacity-60 transition-opacity" aria-label="Vault">
+          <Link 
+            to="/vault" 
+            className={`hover:opacity-60 transition-opacity ${location.pathname === '/vault' ? 'font-medium' : 'font-normal'}`}
+            aria-label="Vault"
+          >
             Vault
           </Link>
-          <Link to="/history" className="hover:opacity-60 transition-opacity" aria-label="History">
+          <Link 
+            to="/history" 
+            className={`hover:opacity-60 transition-opacity ${location.pathname === '/history' ? 'font-medium' : 'font-normal'}`}
+            aria-label="History"
+          >
             History
           </Link>
-          <Link to="/settings" className="hover:opacity-60 transition-opacity" aria-label="Settings">
+          <Link 
+            to="/settings" 
+            className={`hover:opacity-60 transition-opacity ${location.pathname === '/settings' ? 'font-medium' : 'font-normal'}`}
+            aria-label="Settings"
+          >
             Settings
           </Link>
         </div>
