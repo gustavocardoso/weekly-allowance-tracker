@@ -9,15 +9,15 @@ export function Header() {
     <nav className="sticky top-0 z-50 bg-background/80 backdrop-blur-md border-b border-border px-4 py-3">
       <div className="max-w-5xl mx-auto flex items-center justify-between">
         {/* Logo and Brand */}
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-4">
           <img
             src="/logo.png"
             alt="Pocket Parade logo"
-            className="size-12 rounded-xl bg-primary/10 object-contain p-2"
-            width={48}
-            height={48}
+            className="size-16 rounded-2xl bg-primary/10 object-contain p-2.5"
+            width={64}
+            height={64}
           />
-          <span className="font-extrabold tracking-tight text-xl uppercase">Pocket</span>
+          <span className="font-extrabold tracking-tight text-2xl uppercase">Pocket</span>
         </div>
 
         {/* Desktop Navigation */}
