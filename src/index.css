@@ -9,15 +9,15 @@
     
     /* Colors - Light Mode (HSL) */
     --background: 46 36% 95%;
-    --foreground: 240 5% 10%;
+    --foreground: 220 29% 5%;
     --card: 0 0% 100%;
-    --card-foreground: 240 5% 10%;
+    --card-foreground: 220 29% 5%;
     --popover: 0 0% 100%;
-    --popover-foreground: 240 5% 10%;
+    --popover-foreground: 220 29% 5%;
     --primary: 262 83% 57%;      /* Purple */
     --primary-foreground: 0 0% 98%;
     --secondary: 209 40% 96%;
-    --secondary-foreground: 240 5% 10%;
+    --secondary-foreground: 220 29% 5%;
     --muted: 209 40% 96%;
     --muted-foreground: 215 16% 46%;
     --accent: 173 80% 40%;       /* Teal for rewards */
