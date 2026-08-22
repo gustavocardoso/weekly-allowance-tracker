@@ -18,6 +18,7 @@ import SettingsPage from '@/pages/SettingsPage';
 import SetupPage from '@/pages/SetupPage';
 import SituationsPage from '@/pages/SituationsPage';
 import StatsPage from '@/pages/StatsPage';
+import TermsOfServicePage from '@/pages/TermsOfServicePage';
 import UpdatePasswordPage from '@/pages/UpdatePasswordPage';
 
 function ProtectedLayout() {
@@ -54,6 +55,7 @@ function RoutedApp() {
       <Route path="/confirm-email" element={<EmailConfirmationPage />} />
       <Route path="/data-deletion" element={<DataDeletionPage />} />
       <Route path="/privacy" element={<PrivacyPolicyPage />} />
+      <Route path="/terms" element={<TermsOfServicePage />} />
       
       {/* Protected routes */}
       <Route path="/setup" element={<ProtectedRoute><SetupPage /></ProtectedRoute>} />

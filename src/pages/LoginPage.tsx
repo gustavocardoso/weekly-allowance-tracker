@@ -1,9 +1,8 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { useAuthToast } from '@/hooks/useAuthToast';
 import GoogleLoginButton from '@/components/GoogleLoginButton';
-import FacebookLoginButton from '@/components/FacebookLoginButton';
 
 export default function LoginPage() {
   const [email, setEmail] = useState('');
@@ -56,7 +55,6 @@ export default function LoginPage() {
         {/* Social Login Buttons */}
         <div className="space-y-3 mb-6">
           <GoogleLoginButton />
-          <FacebookLoginButton />
         </div>
 
         {/* Divider */}
@@ -141,13 +139,13 @@ export default function LoginPage() {
         {/* Privacy Note */}
         <p className="mt-8 text-center text-xs text-slate-500">
           By continuing, you agree to our{' '}
-          <a href="#" className="text-purple-600 hover:underline">
+          <Link to="/terms" className="text-purple-600 hover:underline">
             Terms of Service
-          </a>{' '}
+          </Link>{' '}
           and{' '}
-          <a href="#" className="text-purple-600 hover:underline">
+          <Link to="/privacy" className="text-purple-600 hover:underline">
             Privacy Policy
-          </a>
+          </Link>
         </p>
       </div>
     </div>
