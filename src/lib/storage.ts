@@ -12,20 +12,12 @@ import type {
   Profile,
   SetupProfileInput,
   Situation,
-  SituationInput,
   StatsSummary,
 } from '@/types/app';
 
 const STORAGE_KEY = 'allowance-tracker-data';
 const EXPORT_VERSION = 1;
 const DATABASE_MIME_TYPE = 'application/x-sqlite3';
-
-const defaultSituations: SituationInput[] = [
-  { name: 'Helped with chores', emoji: '🧹', type: 'reward', amountCents: 100, active: true },
-  { name: 'Practiced reading', emoji: '📚', type: 'reward', amountCents: 50, active: true },
-  { name: 'Forgot to tidy up', emoji: '🧸', type: 'penalty', amountCents: 25, active: true },
-  { name: 'Missed bedtime routine', emoji: '🌙', type: 'penalty', amountCents: 50, active: true },
-];
 
 interface ExportMetadata {
   exportedAt: string;
@@ -320,23 +312,10 @@ export const createProfileAndFirstCycle = (input: SetupProfileInput): AppData =>
 
   const cycle = createCycleRecord(input.baseAmountCents);
   console.log('[storage] Created cycle:', cycle);
-  
-  const situations = defaultSituations.map((item, index) => ({
-    id: createId(),
-    name: item.name,
-    emoji: item.emoji,
-    type: item.type,
-    amountCents: item.amountCents,
-    active: item.active ?? true,
-    sortOrder: index,
-    createdAt: now,
-    updatedAt: now,
-  }));
-  console.log('[storage] Created situations:', situations);
 
   const appData = {
     profile,
-    situations,
+    situations: [],
     cycles: [cycle],
     entries: [],
   };

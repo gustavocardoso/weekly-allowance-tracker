@@ -1,5 +1,6 @@
 import clsx from 'clsx';
 import { useState } from 'react';
+import { Link } from 'react-router-dom';
 
 import Button from '@/components/Button';
 import ConfirmDialog from '@/components/ConfirmDialog';
@@ -100,40 +101,58 @@ export default function DashboardPage() {
           {pendingUndoId ? <span className="rounded-full bg-primary-100 px-3 py-1 text-xs font-semibold text-primary-800">Undo ready</span> : null}
         </div>
         <div className="mt-4 grid gap-2 sm:grid-cols-2 lg:grid-cols-4">
-          {activeSituations.map((situation) => (
-            <button
-              key={situation.id}
-              onClick={() => handleQuickEntry(situation.id)}
-              className={clsx(
-                'group relative flex items-center gap-3 rounded-2xl p-3 text-left transition-all duration-200 hover:scale-[1.02] hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-2 active:scale-[0.98]',
-                situation.type === 'reward' 
-                  ? 'bg-reward-600 text-white hover:bg-reward-700' 
-                  : 'bg-penalty-600 text-white hover:bg-penalty-700',
-              )}
-              aria-label={`Record ${situation.type} ${situation.name} for ${formatCurrency(situation.amountCents)}`}
-            >
-              <span 
-                className={clsx(
-                  'flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-xl text-2xl shadow-sm transition-transform group-hover:scale-110',
-                  situation.type === 'reward' ? 'bg-white/20' : 'bg-white/20'
-                )}
-                aria-hidden="true"
-              >
-                {situation.emoji}
-              </span>
-              <div className="flex-1 min-w-0">
-                <p className="font-semibold text-sm leading-tight truncate">{situation.name}</p>
-                <p className="mt-0.5 text-xs font-bold text-white/90">
-                  {situation.type === 'reward' ? '+' : '-'}{formatCurrency(situation.amountCents)}
-                </p>
+          {activeSituations.length === 0 ? (
+            <div className="col-span-full rounded-3xl bg-slate-50 p-8 text-center">
+              <div className="mx-auto mb-3 flex h-16 w-16 items-center justify-center rounded-full bg-primary-100 text-3xl">
+                ✨
               </div>
-              <span 
-                className="absolute right-2 top-2 rounded-full px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider bg-white/20 text-white"
+              <p className="text-lg font-semibold text-slate-950">No situations yet</p>
+              <p className="mt-2 text-sm text-slate-700">
+                Create situations in Settings to start tracking allowance
+              </p>
+              <Link
+                to="/settings"
+                className="mt-4 inline-block rounded-full bg-primary-600 px-6 py-2 text-sm font-semibold text-white transition-colors hover:bg-primary-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-2"
               >
-                {situation.type === 'reward' ? '+' : '−'}
-              </span>
-            </button>
-          ))}
+                Go to Settings
+              </Link>
+            </div>
+          ) : (
+            activeSituations.map((situation) => (
+              <button
+                key={situation.id}
+                onClick={() => handleQuickEntry(situation.id)}
+                className={clsx(
+                  'group relative flex items-center gap-3 rounded-2xl p-3 text-left transition-all duration-200 hover:scale-[1.02] hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-2 active:scale-[0.98]',
+                  situation.type === 'reward' 
+                    ? 'bg-reward-600 text-white hover:bg-reward-700' 
+                    : 'bg-penalty-600 text-white hover:bg-penalty-700',
+                )}
+                aria-label={`Record ${situation.type} ${situation.name} for ${formatCurrency(situation.amountCents)}`}
+              >
+                <span 
+                  className={clsx(
+                    'flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-xl text-2xl shadow-sm transition-transform group-hover:scale-110',
+                    situation.type === 'reward' ? 'bg-white/20' : 'bg-white/20'
+                  )}
+                  aria-hidden="true"
+                >
+                  {situation.emoji}
+                </span>
+                <div className="flex-1 min-w-0">
+                  <p className="font-semibold text-sm leading-tight truncate">{situation.name}</p>
+                  <p className="mt-0.5 text-xs font-bold text-white/90">
+                    {situation.type === 'reward' ? '+' : '-'}{formatCurrency(situation.amountCents)}
+                  </p>
+                </div>
+                <span 
+                  className="absolute right-2 top-2 rounded-full px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider bg-white/20 text-white"
+                >
+                  {situation.type === 'reward' ? '+' : '−'}
+                </span>
+              </button>
+            ))
+          )}
         </div>
       </SectionCard>
 
