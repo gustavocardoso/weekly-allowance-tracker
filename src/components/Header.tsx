@@ -24,28 +24,28 @@ export function Header() {
         <div className="hidden md:flex items-center gap-6 text-sm text-foreground">
           <Link 
             to="/" 
-            className={`hover:opacity-60 transition-opacity ${location.pathname === '/' ? 'font-medium' : 'font-normal'}`}
+            className={`hover:opacity-60 transition-opacity ${location.pathname === '/' ? 'font-semibold' : 'font-normal'}`}
             aria-label="Dashboard"
           >
             Dashboard
           </Link>
           <Link 
             to="/vault" 
-            className={`hover:opacity-60 transition-opacity ${location.pathname === '/vault' ? 'font-medium' : 'font-normal'}`}
+            className={`hover:opacity-60 transition-opacity ${location.pathname === '/vault' ? 'font-semibold' : 'font-normal'}`}
             aria-label="Vault"
           >
             Vault
           </Link>
           <Link 
             to="/history" 
-            className={`hover:opacity-60 transition-opacity ${location.pathname === '/history' ? 'font-medium' : 'font-normal'}`}
+            className={`hover:opacity-60 transition-opacity ${location.pathname === '/history' ? 'font-semibold' : 'font-normal'}`}
             aria-label="History"
           >
             History
           </Link>
           <Link 
             to="/settings" 
-            className={`hover:opacity-60 transition-opacity ${location.pathname === '/settings' ? 'font-medium' : 'font-normal'}`}
+            className={`hover:opacity-60 transition-opacity ${location.pathname === '/settings' ? 'font-semibold' : 'font-normal'}`}
             aria-label="Settings"
           >
             Settings
