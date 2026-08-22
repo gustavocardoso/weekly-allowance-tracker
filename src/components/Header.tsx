@@ -1,68 +1,61 @@
-import type { ReactNode } from 'react';
+import { Link } from 'react-router-dom';
+import { useProfile } from '@/hooks/useProfile';
 
-import Container from '@/components/Container';
-import StorageModeIndicator from '@/components/StorageModeIndicator';
-import { classNames } from '@/utils/classNames';
+export function Header() {
+  const { profile } = useProfile();
 
-export interface HeaderNavItem {
-  label: string;
-  href: string;
-  isActive?: boolean;
-}
-
-export interface HeaderProps {
-  title: string;
-  subtitle?: string;
-  navigation?: HeaderNavItem[];
-  actions?: ReactNode;
-}
-
-export function Header({ title, subtitle, navigation = [], actions }: HeaderProps) {
   return (
-    <header className="sticky top-0 z-40 border-b border-white/60 bg-white/90 backdrop-blur">
-      <Container className="flex flex-col gap-4 py-4 md:flex-row md:items-center md:justify-between">
-        <div className="space-y-1">
+    <nav className="sticky top-0 z-50 bg-background/80 backdrop-blur-md border-b border-border px-4 py-3">
+      <div className="max-w-5xl mx-auto flex items-center justify-between">
+        {/* Logo and Brand */}
+        <div className="flex items-center gap-3">
+          <img
+            src="/logo.png"
+            alt="Pocket Parade logo"
+            className="size-8 rounded-lg bg-primary/10 object-contain"
+            width={32}
+            height={32}
+          />
+          <span className="font-extrabold tracking-tight text-lg uppercase">Pocket</span>
+        </div>
+
+        {/* Desktop Navigation */}
+        <div className="hidden md:flex items-center gap-6 text-sm font-medium text-muted-foreground">
+          <Link to="/" className="hover:text-foreground transition-colors" aria-label="Dashboard">
+            Dashboard
+          </Link>
+          <Link to="/vault" className="hover:text-foreground transition-colors" aria-label="Vault">
+            Vault
+          </Link>
+          <Link to="/history" className="hover:text-foreground transition-colors" aria-label="History">
+            History
+          </Link>
+          <Link to="/settings" className="hover:text-foreground transition-colors" aria-label="Settings">
+            Settings
+          </Link>
+        </div>
+
+        {/* User Info */}
+        {profile && (
           <div className="flex items-center gap-3">
-            <span className="text-4xl" aria-hidden="true">
-              🌈
-            </span>
-            <div>
-              <h1 className="text-xl font-black text-slate-900 sm:text-2xl">{title}</h1>
-              {subtitle ? <p className="text-sm text-slate-500">{subtitle}</p> : null}
+            <div className="hidden md:block text-right">
+              <p className="text-sm font-semibold text-foreground">{profile.childName}</p>
+              <p className="text-[10px] text-muted-foreground uppercase tracking-wider">
+                {profile.childEmoji}
+              </p>
+            </div>
+            <div className="relative">
+              <div className="size-12 rounded-full ring-[3px] ring-primary/40 bg-primary/10 flex items-center justify-center text-2xl">
+                {profile.childEmoji}
+              </div>
+              <span 
+                className="absolute -bottom-0.5 -right-0.5 size-3.5 bg-accent rounded-full ring-[3px] ring-background" 
+                aria-label="Online"
+              />
             </div>
           </div>
-        </div>
-        <div className="flex flex-col gap-4 md:items-end">
-          {/* Storage Mode Indicator */}
-          <StorageModeIndicator />
-          
-          {navigation.length ? (
-            <nav aria-label="Primary navigation">
-              <ul className="flex flex-wrap gap-2">
-                {navigation.map((item) => (
-                  <li key={item.href}>
-                    <a
-                      href={item.href}
-                      aria-current={item.isActive ? 'page' : undefined}
-                      className={classNames(
-                        'inline-flex min-h-12 items-center rounded-full px-4 py-2 text-sm font-semibold transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-2',
-                        item.isActive
-                          ? 'bg-primary-100 text-primary-700'
-                          : 'text-slate-600 hover:bg-primary-50 hover:text-primary-700',
-                      )}
-                    >
-                      {item.label}
-                    </a>
-                  </li>
-                ))}
-              </ul>
-            </nav>
-          ) : null}
-          {actions}
-        </div>
-      </Container>
-    </header>
+        )}
+      </div>
+    </nav>
   );
 }
-
-export default Header;

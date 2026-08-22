@@ -1,55 +1,24 @@
 import clsx from 'clsx';
 import { type ReactNode } from 'react';
-import { NavLink } from 'react-router-dom';
 
+import { Header } from '@/components/Header';
+import { MobileNav } from '@/components/MobileNav';
 import { LoadingSpinner } from '@/components/LoadingSpinner';
 
 export function AppShell({ children }: { children: ReactNode }) {
-  const links = [
-    { to: '/', label: 'Home', emoji: '🏠' },
-    { to: '/situations', label: 'Situations', emoji: '🎈' },
-    { to: '/history', label: 'History', emoji: '🗂️' },
-    { to: '/stats', label: 'Stats', emoji: '📈' },
-    { to: '/settings', label: 'Settings', emoji: '⚙️' },
-  ];
-
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#fff8f1] via-[#f8fbff] to-[#f4f2ff] text-slate-900">
-      <a href="#main-content" className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-50 focus:rounded-lg focus:bg-white focus:px-4 focus:py-2 focus:ring-2 focus:ring-primary-500">
+    <div className="min-h-screen bg-background text-foreground font-sans selection:bg-primary/10">
+      <a href="#main-content" className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-50 focus:rounded-lg focus:bg-white focus:px-4 focus:py-2 focus:ring-2 focus:ring-ring">
         Skip to main content
       </a>
-      <header className="sticky top-0 z-30 border-b border-white/80 bg-white/85 shadow-[0_10px_30px_-22px_rgba(76,29,149,0.5)] backdrop-blur-xl">
-        <div className="mx-auto flex max-w-6xl flex-col gap-3 px-4 py-3 sm:px-5 md:flex-row md:items-center md:justify-between">
-          <div className="min-w-0">
-            <p className="text-[10px] font-black uppercase tracking-[0.38em] text-primary-700 sm:text-xs">Weekly Allowance Tracker</p>
-            <h1 className="text-xl font-black tracking-tight text-slate-900 sm:text-2xl">Pocket-money parade</h1>
-          </div>
-          <nav className="-mx-1 overflow-x-auto pb-1" aria-label="Primary navigation">
-            <div className="flex min-w-max gap-2 px-1">
-              {links.map((link) => (
-                <NavLink
-                  key={link.to}
-                  to={link.to}
-                  className={({ isActive }) =>
-                    clsx(
-                      'inline-flex min-h-11 items-center gap-2 rounded-full px-4 py-2 text-sm font-semibold transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-2 active:scale-[0.98]',
-                      isActive
-                        ? 'bg-slate-900 text-white shadow-lg shadow-primary-900/15'
-                        : 'bg-white/95 text-slate-700 ring-1 ring-slate-200 hover:-translate-y-0.5 hover:bg-primary-50 hover:text-primary-800 hover:shadow-md',
-                    )
-                  }
-                >
-                  <span aria-hidden="true" className="text-base">
-                    {link.emoji}
-                  </span>
-                  <span>{link.label}</span>
-                </NavLink>
-              ))}
-            </div>
-          </nav>
-        </div>
-      </header>
-      <main id="main-content" tabIndex={-1} className="mx-auto max-w-6xl px-4 py-4 sm:px-5 sm:py-6">{children}</main>
+      
+      <Header />
+      
+      <main id="main-content" tabIndex={-1} className="max-w-5xl mx-auto px-4 py-8 space-y-6 animate-slide-up">
+        {children}
+      </main>
+      
+      <MobileNav />
     </div>
   );
 }
