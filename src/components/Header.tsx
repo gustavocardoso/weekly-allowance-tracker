@@ -13,9 +13,9 @@ export function Header() {
           <img
             src="/logo.png"
             alt="Pocket Parade logo"
-            className="size-16 rounded-2xl bg-primary/10 object-contain p-1"
-            width={64}
-            height={64}
+            className="size-20 rounded-2xl bg-primary/10 object-contain p-1.5"
+            width={80}
+            height={80}
           />
           <span className="font-extrabold tracking-tight text-2xl uppercase">Pocket</span>
         </div>
