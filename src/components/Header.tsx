@@ -13,7 +13,7 @@ export function Header() {
           <img
             src="/logo.png"
             alt="Pocket Parade logo"
-            className="size-16 rounded-2xl bg-primary/10 object-contain p-2.5"
+            className="size-16 rounded-2xl bg-primary/10 object-contain p-1"
             width={64}
             height={64}
           />
